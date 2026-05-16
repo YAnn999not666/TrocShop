@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <!-- PWA Basic Meta -->
+    <meta name="description" content="TrocShop - La plateforme moderne d'échange et de vente à Yamoussoukro." />
+    <meta name="theme-color" content="#EA580C" />
+    <meta name="msapplication-navbutton-color" content="#EA580C" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="TrocShop" />
+    <meta name="application-name" content="TrocShop" />
+    <meta name="msapplication-TileColor" content="#EA580C" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- PWA Assets -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+    
+    <!-- Social Meta Tags -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="TrocShop - Échangez & Vendez" />
+    <meta property="og:description" content="Plateforme d'échange et de vente entre particuliers à Yamoussoukro, Côte d'Ivoire." />
+    <meta property="og:site_name" content="TrocShop" />
+    <meta property="og:image" content="/icon.svg" />
+    
+    <title>TrocShop - Échangez & Vendez</title>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' })
+            .then(reg => {
+              console.log('TrocShop Service Worker enregistré ! Portée:', reg.scope);
+              reg.update(); // Force update on every load
+            })
+            .catch(err => {
+              console.log('Échec de l\'enregistrement du Service Worker:', err);
+            });
+        });
+
+        // Listen for new worker and force reload
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (!refreshing) {
+            window.location.reload();
+            refreshing = true;
+          }
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
