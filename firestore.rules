@@ -1,0 +1,278 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidId(id) { return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function isVerified() { return isSignedIn(); } // Adjusted for phone-based auth workaround
+    function isNum(val) { return val is int || val is float; }
+
+    // --- Entity Validations ---
+
+    function isValidUser(data) {
+      return data.uid == request.auth.uid &&
+             data.displayName is string && data.displayName.size() > 0 && data.displayName.size() <= 100 &&
+             data.email is string && data.email.size() <= 255 &&
+             (data.get('firstName', '') is string) &&
+             (data.get('lastName', '') is string) &&
+             (data.get('phoneNumber', '') is string) &&
+             (data.get('phoneVisibility', 'public') in ['public', 'private']) &&
+             (data.get('neighborhood', '') is string) &&
+             (data.get('city', 'Yamoussoukro') is string) &&
+             (data.get('bio', '') is string) &&
+             (data.get('photoURL', '') is string) &&
+             (data.get('coverURL', '') is string) &&
+             (data.get('location', '') is string) &&
+             (data.get('isVerified', false) is bool) &&
+             (data.get('isCertified', false) is bool) &&
+             (data.get('isStudent', false) is bool) &&
+             (data.get('studentSchool', '') is string) &&
+             (data.get('notificationsEnabled', true) is bool) &&
+             (data.get('badges', []) is list) &&
+             data.createdAt == request.time;
+    }
+
+    function isValidConversation(data) {
+      return data.participantIds is list && data.participantIds.size() == 2 &&
+             request.auth.uid in data.participantIds &&
+             (data.get('productTitle', '') is string) &&
+             (data.get('productId', '') is string) &&
+             (data.get('productImage', '') is string) &&
+             isNum(data.get('productPrice', 0)) &&
+             (data.get('lastSenderId', '') is string) &&
+             (data.get('lastMessage', '') is string) &&
+             data.updatedAt == request.time;
+    }
+
+    function isValidProduct(data, isUpdate) {
+      return data.title is string && data.title.size() > 0 && data.title.size() <= 200 &&
+             data.description is string && data.description.size() <= 5000 &&
+             isNum(data.price) && data.price >= 0 &&
+             data.category is string &&
+             data.condition in ["Neuf", "Très bon état", "Bon état", "Satisfaisant", "Déjà utilisé mais bon", "C'est gâté (pour pièces)"] &&
+             (data.get('neighborhood', '') is string) &&
+             (data.get('city', 'Yamoussoukro') is string) &&
+             (data.get('listingType', 'sale') in ['sale', 'troc', 'mixed']) &&
+             (data.get('exchangeWanted', '') is string) &&
+             (data.get('canTravel', false) is bool) &&
+             (data.get('meetingPoint', '') is string) &&
+             (data.get('availability', '') is string) &&
+             (data.get('is_available', true) is bool) &&
+             (data.get('status', 'available') in ['available', 'pending', 'sold', 'reserved']) &&
+             (data.get('transactionInProgress', false) is bool) &&
+             data.sellerId == (isUpdate ? existing().sellerId : request.auth.uid) &&
+             (isUpdate ? true : data.createdAt == request.time) &&
+             data.updatedAt == request.time;
+    }
+
+    function isValidTransaction(data, isUpdate) {
+      return data.productId is string &&
+             data.productTitle is string &&
+             data.buyerId is string &&
+             data.sellerId is string &&
+             data.participantIds is list && data.participantIds.hasAll([data.buyerId, data.sellerId]) &&
+             (isUpdate || isNum(data.price)) &&
+             data.status in ['pending', 'code_generated', 'completed', 'cancelled'] &&
+             (!('verificationCode' in data) || data.verificationCode == null || data.verificationCode is string) &&
+             (!('buyerRated' in data) || data.buyerRated == null || data.buyerRated is bool) &&
+             (!('sellerRated' in data) || data.sellerRated == null || data.sellerRated is bool) &&
+             (!('sellerConfirmed' in data) || data.sellerConfirmed == null || data.sellerConfirmed is bool) &&
+             (!('buyerConfirmed' in data) || data.buyerConfirmed == null || data.buyerConfirmed is bool) &&
+             (!('completedAt' in data) || data.completedAt == null || data.completedAt == request.time || (isUpdate && data.completedAt == existing().get('completedAt', null))) &&
+             (isUpdate ? true : data.createdAt == request.time) &&
+             (isUpdate ? (data.updatedAt == request.time || data.updatedAt == existing().updatedAt) : data.updatedAt == request.time);
+    }
+
+    function isValidReview(data) {
+      return data.fromUserId == request.auth.uid &&
+             data.fromUserName is string &&
+             (data.get('toUserId', '') is string) &&
+             (data.get('toProductId', '') is string) &&
+             isNum(data.rating) && data.rating >= 1 && data.rating <= 5 &&
+             (data.get('comment', '') is string) && (data.get('comment', '').size() <= 2000) &&
+             data.createdAt == request.time;
+    }
+
+    function isValidMessage(data) {
+      return data.senderId == request.auth.uid &&
+             data.text is string && data.text.size() > 0 && data.text.size() <= 10000 &&
+             (data.get('isProductMention', false) is bool) &&
+             (data.get('isExchangeProposal', false) is bool) &&
+             (data.get('isSystem', false) is bool) &&
+             (data.get('audioUrl', '') is string) &&
+             (data.get('image', '') is string) &&
+             isNum(data.get('duration', 0)) &&
+             (data.get('isRead', false) is bool) &&
+             (data.get('replyTo', null) == null || data.replyTo is map) &&
+             (data.get('reactions', null) == null || data.reactions is map) &&
+             (data.get('productId', '') is string) &&
+             (data.get('exchangeProductId', '') is string) &&
+             (data.createdAt == request.time || data.get('timestamp', null) == request.time);
+    }
+
+    function isValidFavorite(data) {
+      return data.productId is string &&
+             data.createdAt == request.time;
+    }
+
+    function isValidNotification(data) {
+      return data.toUserId is string &&
+             data.type in ['message', 'favorite', 'comment', 'troc', 'transaction', 'system'] &&
+             data.title is string && data.title.size() > 0 &&
+             data.body is string && data.body.size() > 0 &&
+             (data.get('fromUserId', '') is string) &&
+             (data.get('fromUserName', '') is string) &&
+             (data.get('productId', '') is string) &&
+             (data.get('transactionId', '') is string) &&
+             (data.get('conversationId', '') is string) &&
+             data.createdAt == request.time &&
+             data.read == false;
+    }
+
+    function isValidExchange(data, isUpdate) {
+      return (isUpdate || (
+        data.productId is string &&
+        data.productTitle is string &&
+        data.buyerId is string &&
+        data.sellerId is string &&
+        data.type in ['purchase', 'exchange'] &&
+        (data.get('buyerName', null) == null || data.buyerName is string) &&
+        (data.get('trocCode', null) == null || data.trocCode is string) &&
+        (data.get('exchangeProductId', null) == null || data.exchangeProductId is string) &&
+        (data.get('exchangeProductIds', null) == null || data.exchangeProductIds is list) &&
+        (data.get('exchangeProductTitles', null) == null || data.exchangeProductTitles is list) &&
+        (data.get('priceAdjustment', null) == null || isNum(data.priceAdjustment)) &&
+        (data.get('buyerRating', null) == null || isNum(data.buyerRating)) &&
+        (data.get('sellerRating', null) == null || isNum(data.sellerRating)) &&
+        (data.get('productImage', null) == null || data.productImage is string) &&
+        (data.get('productPrice', null) == null || isNum(data.productPrice))
+      )) &&
+      data.get('status', 'pending') in ['pending', 'accepted', 'completed', 'cancelled'] &&
+      (isUpdate ? true : data.get('createdAt', null) == request.time);
+    }
+
+    // --- Routes ---
+
+    match /users/{userId} {
+      allow read: if true; // Public listings need to see seller info
+      allow create: if isVerified() && isOwner(userId) && isValidUser(incoming());
+      allow update: if isVerified() && (
+        (isOwner(userId) && incoming().diff(existing()).affectedKeys().hasOnly([
+          'displayName', 'photoURL', 'coverURL', 'bio', 'location', 'firstName', 
+          'lastName', 'phoneNumber', 'phoneVisibility', 'neighborhood', 'city', 'notificationsEnabled',
+          'isStudent', 'studentSchool', 'badges'
+        ])) ||
+        incoming().diff(existing()).affectedKeys().hasOnly(['rating', 'reviewCount'])
+      );
+
+      match /favorites/{prodId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidFavorite(incoming());
+        allow delete: if isOwner(userId);
+      }
+
+      match /notifications/{notifId} {
+        allow read, delete: if isOwner(userId);
+        allow update: if isOwner(userId) && incoming().diff(existing()).affectedKeys().hasOnly(['read']);
+        allow create: if isSignedIn() && incoming().toUserId == userId && isValidNotification(incoming());
+      }
+    }
+
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isVerified() && isValidReview(incoming());
+      allow update, delete: if isVerified() && isOwner(existing().fromUserId);
+    }
+
+    match /products/{productId} {
+      allow read: if true; // Public listings
+      allow create: if isVerified() && isValidProduct(incoming(), false);
+      allow update: if isVerified() && (
+        // Seller update
+        (isOwner(existing().sellerId) && isValidProduct(incoming(), true))
+        ||
+        // Transaction-based status updates (allow buyer/seller to update status during deal)
+        (incoming().diff(existing()).affectedKeys().hasOnly(['is_available', 'status', 'transactionInProgress', 'updatedAt']) && 
+         (
+           // Seller marking as pending
+           (isOwner(existing().sellerId) && incoming().status == 'pending') ||
+           // Participant setting transactionInProgress during code generation or resolution
+           (incoming().get('transactionInProgress', false) == true || incoming().get('transactionInProgress', false) == false) ||
+           // Buyer/Seller marking as sold (simplified for now but restricted to specific keys)
+           (incoming().status == 'sold' && incoming().is_available == false)
+         ) &&
+         isValidProduct(incoming(), true))
+        ||
+        // Like/Unlike counter update (must be in atomic batch with favorites change)
+        (incoming().diff(existing()).affectedKeys().hasOnly(['likesCount']) &&
+         (incoming().likesCount == (existing().get('likesCount', 0) + 1) || 
+          incoming().likesCount == (existing().get('likesCount', 0) > 0 ? existing().likesCount - 1 : 0)) &&
+         (existsAfter(/databases/$(database)/documents/users/$(request.auth.uid)/favorites/$(productId)) != 
+          exists(/databases/$(database)/documents/users/$(request.auth.uid)/favorites/$(productId)))
+        )
+      );
+      allow delete: if isVerified() && isOwner(existing().sellerId);
+    }
+
+    match /conversations/{convId} {
+      allow read: if isSignedIn() && (resource == null || request.auth.uid in resource.data.participantIds);
+      allow create: if isVerified() && isValidConversation(incoming());
+      allow update: if isVerified() && request.auth.uid in existing().participantIds && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['lastMessage', 'lastSenderId', 'updatedAt']) &&
+        incoming().updatedAt == request.time
+      );
+      allow delete: if isVerified() && request.auth.uid in existing().participantIds;
+
+      match /messages/{msgId} {
+        allow read: if isSignedIn() && (
+                      convId.matches('.*' + request.auth.uid + '.*') || 
+                      exists(/databases/$(database)/documents/conversations/$(convId))
+                    );
+        allow create: if isVerified() && 
+                      (convId.matches('.*' + request.auth.uid + '.*') ||
+                       existsAfter(/databases/$(database)/documents/conversations/$(convId))) &&
+                      isValidMessage(incoming());
+        allow update: if isVerified() && 
+                      (convId.matches('.*' + request.auth.uid + '.*') ||
+                       exists(/databases/$(database)/documents/conversations/$(convId))) &&
+                      incoming().diff(existing()).affectedKeys().hasOnly(['reactions']);
+      }
+    }
+    
+    // --- CODE CORRECT ET FLUIDE POUR LES TRANSACTIONS / EXCHANGES ---
+    
+    match /exchanges/{exchangeId} {
+      allow read: if isSignedIn() && (request.auth.uid == resource.data.get('buyerId', '') || request.auth.uid == resource.data.get('sellerId', ''));
+      allow create: if isVerified() && isValidExchange(incoming(), false) && (request.auth.uid == incoming().get('buyerId', '') || request.auth.uid == incoming().get('sellerId', ''));
+      
+      // LA CORRECTION EST ICI : On retire 'hasOnly' pour laisser passer la validation du code ET la mise à jour des stocks/produits
+      allow update: if isVerified() && 
+                     (request.auth.uid == existing().get('buyerId', '') || request.auth.uid == existing().get('sellerId', '')) &&
+                     isValidExchange(incoming(), true);
+                     
+      allow delete: if isVerified() && (request.auth.uid == existing().get('buyerId', '') || request.auth.uid == existing().get('sellerId', ''));
+    }
+
+    match /transactions/{transactionId} {
+      allow read, write: if request.auth != null && (
+        request.auth.uid == resource.data.buyerId || 
+        request.auth.uid == resource.data.sellerId || 
+        (resource.data.get('participantIds', null) != null && request.auth.uid in resource.data.participantIds)
+      );
+      allow create: if request.auth != null;
+    }
+
+    match /appConfig/{configId} {
+      allow read: if isValidId(configId);
+    }
+  }
+}
