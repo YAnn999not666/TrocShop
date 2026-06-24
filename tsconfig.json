@@ -1,0 +1,56 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "module": "ESNext",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "types": [
+      "node",
+      "vite/client"
+    ],
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "allowJs": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "firebase/app": [
+        "./src/lib/firebase.ts"
+      ],
+      "firebase/auth": [
+        "./src/lib/firebase.ts"
+      ],
+      "firebase/firestore": [
+        "./src/lib/firebase.ts"
+      ],
+      "firebase/storage": [
+        "./src/lib/firebase.ts"
+      ],
+      "@capacitor/app": [
+        "./src/lib/capacitor-stub.ts"
+      ],
+      "@capacitor/share": [
+        "./src/lib/capacitor-stub.ts"
+      ],
+      "@capacitor/core": [
+        "./src/lib/capacitor-stub.ts"
+      ]
+    },
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "strict": false,
+    "noImplicitAny": false
+  },
+  "include": [
+    "src"
+  ]
+}

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="TrocShop - La plateforme moderne d&#39;échange et de vente à Yamoussoukro.">
+    <meta name="theme-color" content="#EA580C" />
+    <meta name="msapplication-navbutton-color" content="#EA580C" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="TrocShop" />
+    <meta name="application-name" content="TrocShop" />
+    <meta name="msapplication-TileColor" content="#EA580C" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/jpeg" href="/icon.jpg" />
+    <link rel="apple-touch-icon" href="/icon.jpg" />
+    
+    <meta property="og:type" content="website" />
+    
+    
+    <meta property="og:site_name" content="TrocShop" />
+    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/163b01ba-db06-46b3-9083-e30a045b4f5a">
+    
+    <title>TrocShop - Échangez &amp; Vendez</title>
+    
+    <script>
+      console.log("Service Worker désactivé pour empêcher le crash sur AI Studio.");
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for (var i = 0; i < registrations.length; i++) {
+            registrations[i].unregister().then(function(success) {
+              if (success) {
+                console.log("Service Worker nettoyé avec succès.");
+              }
+            });
+          }
+        }).catch(function(err) {
+          console.log("Erreur lors du nettoyage du service worker:", err);
+        });
+      }
+    </script>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+    <meta property="og:title" content="TrocShop - Échangez &amp; Vendez">
+  <meta name="twitter:title" content="TrocShop - Échangez &amp; Vendez">
+  <meta property="og:description" content="TrocShop - La plateforme moderne d&#39;échange et de vente à Yamoussoukro.">
+  <meta name="twitter:description" content="TrocShop - La plateforme moderne d&#39;échange et de vente à Yamoussoukro.">
+  <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/163b01ba-db06-46b3-9083-e30a045b4f5a">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

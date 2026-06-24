@@ -1,0 +1,12 @@
+{
+  "name": "TrocShop iOS - Alpha 999",
+  "description": "Marketplace mobile premium inspirée par l'esthétique iOS. Alpha 999 Prototype.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
