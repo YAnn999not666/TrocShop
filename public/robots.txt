@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://troc-shop-kgfn.vercel.app/sitemap.xml
