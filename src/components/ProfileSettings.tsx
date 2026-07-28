@@ -192,29 +192,29 @@ export const ProfileSettings = ({ profile, onSave, onBack }: ProfileSettingsProp
   return (
     <div className="space-y-6 pb-20">
       <header className="flex items-center gap-4">
-        <button onClick={onBack} className="p-3 bg-white border border-zinc-100 rounded-2xl shadow-sm cursor-pointer">
-          <ArrowLeft className="w-5 h-5" />
+        <button onClick={onBack} className="p-3 bg-white border border-zinc-100 rounded-2xl shadow-sm cursor-pointer hover:bg-zinc-50 transition-colors">
+          <ArrowLeft className="w-5 h-5 text-zinc-800" />
         </button>
-        <h2 className="text-2xl font-black uppercase tracking-tighter">PARAMÈTRES</h2>
+        <h2 className="text-2xl font-black uppercase tracking-tighter text-zinc-900">PARAMÈTRES DU PROFIL</h2>
       </header>
 
-      {/* Cover and Profile Upload Cards */}
-      <div className="bg-white p-6 rounded-[2.5rem] border border-zinc-100 shadow-xl space-y-6">
+      {/* Cover and Profile Info Card */}
+      <div className="bg-white p-6 sm:p-8 rounded-[2.5rem] border border-zinc-150 shadow-sm space-y-6">
         <div>
-          <label className="text-[10px] font-black uppercase tracking-widest text-zinc-800 ml-1 block mb-2">PHOTOS DU PROFIL</label>
+          <label className="text-xs font-black uppercase tracking-wider text-zinc-800 ml-1 block mb-3">PHOTOS DU PROFIL</label>
           
           {/* Cover Photo Upload */}
-          <div className="relative h-32 bg-zinc-100 rounded-2xl overflow-hidden group border border-zinc-200 shadow-inner flex items-center justify-center">
+          <div className="relative h-36 bg-zinc-100 rounded-2xl overflow-hidden group border border-zinc-200 shadow-inner flex items-center justify-center">
             {data.coverURL ? (
               <img src={data.coverURL} className="w-full h-full object-cover" alt="Couverture" />
             ) : (
               <div className="flex flex-col items-center justify-center text-zinc-400 gap-1.5 p-4 text-center">
-                <Camera size={20} className="text-zinc-400" />
-                <span className="text-[8px] font-black uppercase tracking-widest">Photo de couverture</span>
+                <Camera size={22} className="text-zinc-400" />
+                <span className="text-xs font-black uppercase tracking-wider">Photo de couverture</span>
               </div>
             )}
-            <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer text-white text-[9px] uppercase font-black tracking-widest gap-2">
-              <Camera size={14} />
+            <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer text-white text-xs uppercase font-black tracking-wider gap-2">
+              <Camera size={16} />
               Importer la couverture
               <input 
                 type="file" 
@@ -230,14 +230,14 @@ export const ProfileSettings = ({ profile, onSave, onBack }: ProfileSettingsProp
 
           {/* Profile Photo Upload */}
           <div className="flex justify-center -mt-12 relative z-10">
-            <div className="relative w-24 h-24 rounded-[1.8rem] bg-orange-100 border-4 border-white shadow-xl overflow-hidden group flex items-center justify-center">
+            <div className="relative w-28 h-28 rounded-[2rem] bg-orange-100 border-4 border-white shadow-xl overflow-hidden group flex items-center justify-center">
               {data.photoURL ? (
                 <img src={data.photoURL} className="w-full h-full object-cover" alt="Profil" />
               ) : (
-                <span className="text-orange-600 text-3xl font-black italic">{profile?.displayName?.[0] || 'U'}</span>
+                <span className="text-orange-600 text-4xl font-black italic">{profile?.displayName?.[0] || 'U'}</span>
               )}
-              <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer text-white text-[8px] uppercase font-black tracking-widest gap-1 p-2 text-center leading-none">
-                <Camera size={12} />
+              <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer text-white text-xs uppercase font-black tracking-wider gap-1 p-2 text-center leading-none">
+                <Camera size={14} />
                 <span>Modifier photo</span>
                 <input 
                   type="file" 
@@ -253,93 +253,53 @@ export const ProfileSettings = ({ profile, onSave, onBack }: ProfileSettingsProp
           </div>
         </div>
 
-        <div className="space-y-1.5">
-          <label className="text-[10px] font-black uppercase tracking-widest text-zinc-800 ml-1">Nom d'affichage</label>
+        <div className="space-y-2">
+          <label className="text-xs font-black uppercase tracking-wider text-zinc-800 ml-1 block">Nom d'affichage</label>
           <input 
             type="text" 
             value={data.displayName} 
             onChange={e => setData({...data, displayName: e.target.value})}
-            className="w-full p-4 rounded-2xl bg-zinc-50 border-none outline-none focus:ring-2 focus:ring-orange-500/20 text-sm font-medium"
+            className="w-full p-4 rounded-2xl bg-zinc-50 border border-zinc-200 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 text-base font-bold text-zinc-900"
           />
         </div>
 
-        <div className="space-y-1.5">
-          <label className="text-[10px] font-black uppercase tracking-widest text-zinc-800 ml-1">Bio</label>
+        <div className="space-y-2">
+          <label className="text-xs font-black uppercase tracking-wider text-zinc-800 ml-1 block">Bio</label>
           <textarea 
             value={data.bio} 
             onChange={e => setData({...data, bio: e.target.value})}
-            className="w-full p-4 rounded-2xl bg-zinc-50 border-none outline-none focus:ring-2 focus:ring-orange-500/20 text-sm font-medium min-h-[100px]"
+            className="w-full p-4 rounded-2xl bg-zinc-50 border border-zinc-200 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 text-base font-medium text-zinc-900 min-h-[100px]"
           />
         </div>
 
-        <div className="space-y-1.5">
-          <label className="text-[10px] font-black uppercase tracking-widest text-zinc-800 ml-1">Téléphone</label>
+        <div className="space-y-2">
+          <label className="text-xs font-black uppercase tracking-wider text-zinc-800 ml-1 block">Téléphone</label>
           <input 
             type="tel" 
             value={data.phoneNumber} 
             onChange={e => setData({...data, phoneNumber: e.target.value})}
-            className="w-full p-4 rounded-2xl bg-zinc-50 border-none outline-none focus:ring-2 focus:ring-orange-500/20 text-sm font-medium"
+            className="w-full p-4 rounded-2xl bg-zinc-50 border border-zinc-200 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 text-base font-bold text-zinc-900"
           />
         </div>
 
-        {/* Option de visibilité du téléphone */}
-        <div className="p-5 bg-zinc-50 rounded-3xl border border-zinc-100/80 shadow-sm space-y-4">
-          <div className="flex flex-col gap-3">
-            <div>
-              <p className="text-xs font-black uppercase tracking-widest text-zinc-900 leading-tight">Option de contact</p>
-              <p className="text-[10px] text-zinc-400 font-bold">Choisissez si votre numéro de téléphone est affiché publiquement sur vos publications.</p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => setData(prev => ({ ...prev, phoneVisibility: 'private' }))}
-                className={cn(
-                  "p-4 rounded-2xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-1.5",
-                  data.phoneVisibility === 'private'
-                    ? "bg-orange-50 border-orange-500 text-orange-600 font-black"
-                    : "bg-white border-zinc-100 text-zinc-500 hover:bg-zinc-100/50"
-                )}
-              >
-                <span className="text-xs font-black">Numéro Privé</span>
-                <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-wider">Masqué partout</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setData(prev => ({ ...prev, phoneVisibility: 'public' }))}
-                className={cn(
-                  "p-4 rounded-2xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-1.5",
-                  data.phoneVisibility === 'public'
-                    ? "bg-orange-50 border-orange-500 text-orange-600 font-black"
-                    : "bg-white border-zinc-100 text-zinc-500 hover:bg-zinc-100/50"
-                )}
-              >
-                <span className="text-xs font-black">Numéro Public</span>
-                <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-wider">Visible sur les annonces</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-1.5 opacity-50">
-          <label className="text-[10px] font-black uppercase tracking-widest text-zinc-800 ml-1">Ville</label>
-          <div className="w-full p-4 rounded-2xl bg-zinc-100 border-none text-sm font-bold text-zinc-700">
+        <div className="space-y-2 opacity-60">
+          <label className="text-xs font-black uppercase tracking-wider text-zinc-800 ml-1 block">Ville</label>
+          <div className="w-full p-4 rounded-2xl bg-zinc-100 border border-zinc-200 text-base font-bold text-zinc-700">
             Yamoussoukro
           </div>
         </div>
 
-        <div className="space-y-1.5 relative">
-          <label className="text-[10px] font-black uppercase tracking-widest text-zinc-800 ml-1">Quartier</label>
+        <div className="space-y-2 relative">
+          <label className="text-xs font-black uppercase tracking-wider text-zinc-800 ml-1 block">Quartier</label>
           <button
             type="button"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="w-full p-4 rounded-2xl bg-zinc-50 border border-transparent outline-none text-sm font-semibold flex items-center justify-between cursor-pointer focus:ring-2 focus:ring-orange-500/20"
+            className="w-full p-4 rounded-2xl bg-zinc-50 border border-zinc-200 outline-none text-base font-bold flex items-center justify-between cursor-pointer focus:ring-2 focus:ring-orange-500/20"
           >
             <span className={data.neighborhood ? "text-zinc-900" : "text-zinc-400"}>
               {data.neighborhood || "Sélectionnez un quartier"}
             </span>
-            <ChevronDown size={16} className={`text-zinc-400 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`} />
+            <ChevronDown size={18} className={`text-zinc-500 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`} />
           </button>
           
           <AnimatePresence>
@@ -348,7 +308,7 @@ export const ProfileSettings = ({ profile, onSave, onBack }: ProfileSettingsProp
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="absolute z-[110] left-0 right-0 mt-2 bg-white rounded-2xl border border-zinc-100 shadow-2xl max-h-60 overflow-y-auto p-2 space-y-1"
+                className="absolute z-[110] left-0 right-0 mt-2 bg-white rounded-2xl border border-zinc-200 shadow-2xl max-h-60 overflow-y-auto p-2 space-y-1"
               >
                 <button
                   type="button"
@@ -383,18 +343,18 @@ export const ProfileSettings = ({ profile, onSave, onBack }: ProfileSettingsProp
         </div>
 
         {/* Toggle statut étudiant */}
-        <div className="p-5 bg-zinc-50 rounded-3xl border border-zinc-100/80 shadow-sm space-y-4">
+        <div className="p-5 bg-zinc-50 rounded-3xl border border-zinc-200/80 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className={cn(
-                "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
-                data.isStudent ? "bg-orange-100 text-orange-600" : "bg-zinc-100 text-zinc-400"
+                "w-11 h-11 rounded-2xl flex items-center justify-center transition-colors",
+                data.isStudent ? "bg-orange-100 text-orange-600" : "bg-zinc-200 text-zinc-500"
               )}>
-                <GraduationCap size={20} />
+                <GraduationCap size={22} />
               </div>
               <div>
-                <p className="text-xs font-black uppercase tracking-widest text-zinc-900 leading-tight">Statut Étudiant</p>
-                <p className="text-[10px] text-zinc-400 font-bold">Activer le badge et l'espace Campus</p>
+                <p className="text-xs font-black uppercase tracking-wider text-zinc-900 leading-tight">Statut Étudiant</p>
+                <p className="text-xs text-zinc-500 font-medium">Activer le badge et l'accès à l'Espace Campus</p>
               </div>
             </div>
             
@@ -404,8 +364,8 @@ export const ProfileSettings = ({ profile, onSave, onBack }: ProfileSettingsProp
                 setData(prev => ({ ...prev, isStudent: !prev.isStudent }));
               }}
               className={cn(
-                "w-12 h-6 rounded-full p-1 transition-all duration-300 cursor-pointer",
-                data.isStudent ? "bg-orange-600" : "bg-zinc-200"
+                "w-12 h-6 rounded-full p-1 transition-all duration-300 cursor-pointer shrink-0",
+                data.isStudent ? "bg-orange-600" : "bg-zinc-300"
               )}
             >
               <motion.div 
@@ -421,9 +381,9 @@ export const ProfileSettings = ({ profile, onSave, onBack }: ProfileSettingsProp
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="space-y-1.5 pt-1 overflow-visible"
+                className="space-y-2 pt-2 overflow-visible"
               >
-                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-800 ml-1">Sélectionne ton école</label>
+                <label className="text-xs font-black uppercase tracking-wider text-zinc-800 ml-1 block">Sélectionne ton école</label>
                 <CustomDropdown
                   value={data.studentSchool}
                   options={CAMPUS_SCHOOLS}
@@ -434,78 +394,134 @@ export const ProfileSettings = ({ profile, onSave, onBack }: ProfileSettingsProp
             )}
           </AnimatePresence>
         </div>
+      </div>
 
-        {/* Section Changement de mot de passe */}
-        <div className="p-5 bg-zinc-50 rounded-3xl border border-zinc-100/80 shadow-sm space-y-4">
-          <div>
-            <p className="text-xs font-black uppercase tracking-widest text-zinc-900 leading-tight">Changer de mot de passe</p>
-            <p className="text-[10px] text-zinc-400 font-bold">Renseignez votre ancien mot de passe pour définir un nouveau.</p>
+      {/* Option de visibilité du téléphone - Dedicated Standalone Card */}
+      <div className="bg-white p-6 sm:p-8 rounded-[2.5rem] border border-zinc-150 shadow-sm space-y-4">
+        <div className="space-y-1">
+          <h3 className="text-sm sm:text-base font-black uppercase tracking-tight text-zinc-900">
+            Option de contact
+          </h3>
+          <p className="text-xs font-semibold text-zinc-500 leading-relaxed">
+            Choisissez si votre numéro de téléphone est affiché publiquement sur vos annonces et publications.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <button
+            type="button"
+            onClick={() => setData(prev => ({ ...prev, phoneVisibility: 'private' }))}
+            className={cn(
+              "p-5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col gap-1.5 shadow-sm",
+              data.phoneVisibility === 'private'
+                ? "bg-orange-50/90 border-orange-500 text-orange-600 font-black ring-2 ring-orange-500/20"
+                : "bg-zinc-50 border-zinc-200 text-zinc-700 hover:bg-zinc-100"
+            )}
+          >
+            <span className="text-sm font-black">Numéro Privé</span>
+            <span className="text-xs font-medium text-zinc-500">Masqué partout sur vos annonces</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setData(prev => ({ ...prev, phoneVisibility: 'public' }))}
+            className={cn(
+              "p-5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col gap-1.5 shadow-sm",
+              data.phoneVisibility === 'public'
+                ? "bg-orange-50/90 border-orange-500 text-orange-600 font-black ring-2 ring-orange-500/20"
+                : "bg-zinc-50 border-zinc-200 text-zinc-700 hover:bg-zinc-100"
+            )}
+          >
+            <span className="text-sm font-black">Numéro Public</span>
+            <span className="text-xs font-medium text-zinc-500">Visible directement sur vos annonces</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Section Changement de mot de passe - Dedicated Standalone Card */}
+      <div className="bg-white p-6 sm:p-8 rounded-[2.5rem] border border-zinc-150 shadow-sm space-y-5">
+        <div className="space-y-1">
+          <h3 className="text-sm sm:text-base font-black uppercase tracking-tight text-zinc-900">
+            Changer de mot de passe
+          </h3>
+          <p className="text-xs font-semibold text-zinc-500 leading-relaxed">
+            Renseignez votre ancien mot de passe pour pouvoir définir votre nouveau mot de passe.
+          </p>
+        </div>
+
+        <form onSubmit={handleUpdatePassword} className="space-y-4 pt-1">
+          <div className="space-y-1.5">
+            <label className="text-xs font-black uppercase tracking-wider text-zinc-700 ml-1 block">
+              Ancien mot de passe
+            </label>
+            <input
+              type="password"
+              value={oldPassword}
+              onChange={e => setOldPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full p-4 rounded-2xl bg-zinc-50 border border-zinc-200 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 text-base font-bold text-zinc-900 placeholder:text-zinc-400"
+            />
           </div>
 
-          <form onSubmit={handleUpdatePassword} className="space-y-3">
-            <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-widest text-zinc-500 ml-1">Ancien mot de passe</label>
-              <input
-                type="password"
-                value={oldPassword}
-                onChange={e => setOldPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full p-4 rounded-xl bg-white border border-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/20 text-sm font-medium"
-              />
-            </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-black uppercase tracking-wider text-zinc-700 ml-1 block">
+              Nouveau mot de passe
+            </label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={e => setNewPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full p-4 rounded-2xl bg-zinc-50 border border-zinc-200 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 text-base font-bold text-zinc-900 placeholder:text-zinc-400"
+            />
+          </div>
 
-            <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-widest text-zinc-500 ml-1">Nouveau mot de passe</label>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={e => setNewPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full p-4 rounded-xl bg-white border border-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/20 text-sm font-medium"
-              />
-            </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-black uppercase tracking-wider text-zinc-700 ml-1 block">
+              Confirmer le nouveau mot de passe
+            </label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full p-4 rounded-2xl bg-zinc-50 border border-zinc-200 outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 text-base font-bold text-zinc-900 placeholder:text-zinc-400"
+            />
+          </div>
 
-            <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-widest text-zinc-500 ml-1">Confirmer le nouveau mot de passe</label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={e => setConfirmPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full p-4 rounded-xl bg-white border border-zinc-100 outline-none focus:ring-2 focus:ring-orange-500/20 text-sm font-medium"
-              />
-            </div>
+          {passError && (
+            <p className="text-xs font-bold text-red-600 bg-red-50 p-4 rounded-2xl border border-red-200">{passError}</p>
+          )}
 
-            {passError && (
-              <p className="text-xs font-bold text-red-500 bg-red-50 p-3 rounded-xl border border-red-100">{passError}</p>
-            )}
+          {passSuccess && (
+            <p className="text-xs font-bold text-emerald-700 bg-emerald-50 p-4 rounded-2xl border border-emerald-200">{passSuccess}</p>
+          )}
 
-            {passSuccess && (
-              <p className="text-xs font-bold text-emerald-600 bg-emerald-50 p-3 rounded-xl border border-emerald-100">{passSuccess}</p>
-            )}
+          <button
+            type="submit"
+            disabled={passLoading}
+            className="w-full py-4 text-xs font-black uppercase tracking-widest bg-zinc-900 hover:bg-black text-white rounded-2xl transition-all shadow-md active:scale-98 cursor-pointer disabled:opacity-50"
+          >
+            {passLoading ? 'Mise à jour en cours...' : 'Mettre à jour le mot de passe'}
+          </button>
+        </form>
+      </div>
 
-            <Button
-              type="submit"
-              disabled={passLoading}
-              variant="secondary"
-              className="w-full py-3 text-[10px] uppercase font-black tracking-widest bg-zinc-900 text-white rounded-xl hover:bg-black hover:text-white transition-all shadow-sm border border-transparent"
-            >
-              {passLoading ? 'Mise à jour...' : 'Mettre à jour le mot de passe'}
-            </Button>
-          </form>
-        </div>
-
-        <div className="pt-4 space-y-4">
-           {loading ? (
-             <div className="flex justify-center p-4">
-               <div className="w-8 h-8 border-4 border-orange-600 border-t-transparent rounded-full animate-spin" />
-             </div>
-           ) : (
-             <Button variant="primary" className="w-full py-4 uppercase font-black tracking-widest rounded-2xl shadow-orange-600/20" onClick={handleSubmit}>
-               Sauvegarder
-             </Button>
-           )}
-        </div>
+      {/* Main Save Profile Button at the very bottom of Settings page */}
+      <div className="pt-2">
+        {loading ? (
+          <div className="flex justify-center p-4">
+            <div className="w-8 h-8 border-4 border-orange-600 border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
+          <Button 
+            variant="primary" 
+            className="w-full py-4 text-xs font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-orange-600/20 cursor-pointer" 
+            onClick={handleSubmit}
+          >
+            Sauvegarder le profil
+          </Button>
+        )}
       </div>
     </div>
   );
